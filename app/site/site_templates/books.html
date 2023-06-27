@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %} 
+
+  
+<section class="bg-dark text-light text-center shadow mb-20">
+    <div class="container p-5 bg-dark">
+        <div class="row">
+            <div class="d-md-flex bg-dark align-items-center justify-content-evenly">
+                <h1 class="col text-center">Hello {{ current_user.first_name }}! Welcome to the Library App.</h1>
+            </div>
+            <div>
+                <h3 class="col text-center">Create, Retrieve, Update or Delete a book. </h3>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="text-center">
+    <div class="container p-5">
+        <div class="row align-items-center"><br>
+            <h3 class="p-5">Conduct your search, entry, update and deletion here</h3>
+                <form method="post" action = "{{ url_for('site.books') }}">
+                    
+                    <div>
+                        <label for="year">Year:</label><input type="number" name="year" min="1950" max="2023" autofocus placeholder="Year">
+                    </div>    
+                    <div>
+                        <label for="isbn">ISBN:</label><input type="text" name="ISBN"  autofocus placeholder="ISBN">
+                    </div>
+                    <div>
+                        <label for="title">Title:</label>
+                        <input type="text" name="title" placeholder="Input Title" autofocus></th>
+                    </div>
+                    <div>
+                        <label for="pages">Pages:</label>
+                        <input type="text" name="pages" placeholder="Input Pages" autofocus>
+                    </div>
+                    <div>
+                        <label for="author">Author:</label>
+                        <input type="text" name="author" placeholder="Input Author" autofocus>
+                    </div>
+                    <button type="submit" name="create" formaction="/create_book">Create Book</button>
+                    
+                    
+                </form>
+            
+        </div>
+        <div class="row"><br>
+            
+            <h3 class="p-5">Books:</h3>
+            <table>
+                <thead style="background-color: black; color: white">
+                <tr>
+                    <th><label for="isbn">ISBN:</label><br></th>
+                    <th><label for="year">Year:</label><br></th>
+                    <th><label for="title">Title:</label><br></th>
+                    <th><label for="pages">Pages:</label><br></th>
+                    <th><label for="author">Author:</label><br></th>
+                </tr>
+                
+                {% for book in books %}
+                
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ book.isbn }}</td>
+                    <td>{{ book.year }}</td>
+                    <td>{{ book.title}}</td>
+                    <td>{{ book.pages }}</td>
+                    <td>
+                        
+                        <!-- <form  method="post" action="{{ url_for('site.update_book', id=book.id) }}" style="justify-content: center; float: left" >
+                            <input type="hidden" name="method" value="Update">
+                            <button type="submit" class="fas fa-2xs btn btn-warning text-dark update-button" name="update">Edit</button>
+                        </form> -->
+                        
+                        <form method="post" action="/delete_book" style="justify-content: center; float: right" >
+                            <input type="hidden" name="method" value="Delete">
+                            <button type="submit" class="fas fa-2xs btn btn-danger text-dark delete-button" name="delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+              
+        </div>
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-4"></div>
+            <div class="col-3 p-10">
+                <img src="../../static/images/photo3.jpg" class="d-flex align-items-center justify-content-center p-50 img-fluid" alt="">
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+</section>
+{% endblock %}

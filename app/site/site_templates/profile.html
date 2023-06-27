@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %} 
+    <section class="bg-dark text-light text-center shadow mb-20">
+        <div class="container p-5 bg-dark">
+            <div class="row">
+                <div class="d-md-flex bg-dark align-items-center justify-content-evenly">
+                    <h1 class="col text-center">Hello {{ current_user.first_name }}! This is your user profile. Welcome!</h1>
+                </div>
+                <div>
+                    <h3 class="col text-center">Here is your email: {{ current_user.email}}.</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="text-center">
+        <div class="container p-10">
+            <div class="row"><br>
+                <h3 class="p-5">Here are your profile details</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">First Name: {{ current_user.first_name }}</li>
+                    <li class="list-group-item">Last Name: {{ current_user.last_name }}</li>
+                    <li class="list-group-item">Email: {{ current_user.email }}</li>
+                    <li class="list-group-item">Token: {{ current_user.token }} </li> 
+                </ul>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-4"></div>
+                    <div class="col-3 p-10">
+                        <img src="../../static/images/photo1.jpg" class="d-flex align-items-center justify-content-center p-50 img-fluid" alt="">
+                    </div>
+                <div class="col-3"></div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
