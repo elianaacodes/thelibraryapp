@@ -59,6 +59,7 @@ class Contact(db.Model):
     phone_number = db.Column(db.String(20))
     address = db.Column(db.String(200))
     user_token = db.Column(db.String, db.ForeignKey('user.token'), nullable = False)
+    
 
     def __init__(self, first_name, last_name, email, phone_number, address, user_token, id = ''):
         self.id = self.set_id()
@@ -71,7 +72,7 @@ class Contact(db.Model):
 
 
     def __repr__(self):
-        return f'The following contact has been added to the phonebook: {self.first_name} {self.last_name}'
+        return f'The following contact has been added to contacts: {self.first_name} {self.last_name}'
 
     def set_id(self):
         return (secrets.token_urlsafe())

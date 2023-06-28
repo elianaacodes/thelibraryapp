@@ -1,4 +1,3 @@
-
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for
 from models import db, User, Book, book_schema, books_schema
 from flask_login import current_user
@@ -25,12 +24,17 @@ def update():
 
 @site.route('/create_book', methods=['POST'])
 def create_book():
+
     isbn = request.form['isbn']
     year = request.form['year']
     title = request.form['title']
     pages = request.form['pages']
     author = request.form['author']
-    user_id = current_user.id
+
+    
+    user_id = current_user.token
+    
+    # get user info
     
     book = Book(isbn = isbn, year=year, title=title, pages=pages, author=author, user_id = user_id )
     db.session.add(book)
@@ -39,9 +43,9 @@ def create_book():
     return redirect(url_for('site.books'))
 
 
-@site.route('/update_book/<id>/edit', methods=['POST', 'PUT'])
-def update_book(id):
-    book = Book.query.filter_by(id=id).first()
+@site.route('/update_book/<isbn>/edit', methods=['POST', 'PUT'])
+def update_book(isbn):
+    book = Book.query.filter_by(isbn=isbn).first()
 
     if request.method in ['POST', 'PUT']:
         print("I printed!")
@@ -59,11 +63,9 @@ def update_book(id):
             return "Book does not exist."
     return render_template('update.html', book=book)
 
-    
-
-@site.route('/delete_book/<id>', methods=['POST'])
-def delete_book(id):
-    book = Book.query.get(id)
+@site.route('/delete_book/<isbn>', methods=['POST'])
+def delete_book(isbn):
+    book = Book.query.get(isbn)
     if book:
         db.session.delete(book)
         db.session.commit()
