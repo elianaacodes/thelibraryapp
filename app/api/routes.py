@@ -1,8 +1,26 @@
 from flask import Blueprint, request, jsonify, render_template
 from helpers import token_required
-from models import db, User, Contact, contact_schema, contacts_schema, Book, book_schema, books_schema
+from models import db, User, Contact, contact_schema, contacts_schema, Book, book_schema, books_schema, check_password_hash
+from flask_login import login_user
 
 api = Blueprint('api',__name__, url_prefix='/api')
+
+@api.route('/syncFirebaseLogin', methods=['POST'])
+def sync_firebase_login():
+
+    email = request.json['email']
+    uid = request.json['uid']
+
+    logged_user = User.query.filter(User.email == email).first()
+    if logged_user and check_password_hash(logged_user.password, uid):
+        login_user(logged_user)
+    else:
+        logged_user = User(email, password = uid)
+        db.session.add(logged_user)
+        db.session.commit()
+
+    return jsonify({"id":logged_user.id, "token": logged_user.token})
+
 
 @api.route('/contacts', methods = ['POST'])
 @token_required
