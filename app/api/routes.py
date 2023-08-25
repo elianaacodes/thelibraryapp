@@ -2,6 +2,11 @@ from flask import Blueprint, request, jsonify, render_template
 from helpers import token_required
 from models import db, User, Contact, contact_schema, contacts_schema, Book, book_schema, books_schema, check_password_hash
 from flask_login import login_user
+from webargs.flaskparser import use_args
+from webargs import fields
+from urllib.request import urlopen
+from urllib import parse
+import json
 
 api = Blueprint('api',__name__, url_prefix='/api')
 
@@ -149,3 +154,48 @@ def delete_book(current_user_token, id):
     db.session.commit()
     response = book_schema.dump(book)
     return jsonify(response)
+
+@api.route("/search", methods=["GET"])
+@use_args(
+    {
+        "title": fields.String(required=True, allow_none=False),
+    },
+    location="query",
+)
+def search_books(args):
+    encoded_query = 'coding'
+    if args.get("title"):
+        encoded_query = parse.quote(args.get("title"))
+    api = "https://www.googleapis.com/books/v1/volumes?q={}".format(encoded_query)
+    resp = urlopen(api)
+    # parse JSON into Python as a dictionary
+    books_data = json.load(resp).get("items")
+
+    books = []
+    max_books = 20
+    if len(books_data) < max_books:
+        max_books = len(books_data)
+
+    for i in range(0, max_books):
+        volume_info = books_data[i]["volumeInfo"]
+        author = volume_info.get("authors")
+        prettify_author = ""
+        if author:
+            prettify_author = ','.join(author)
+
+        image_link = ""
+        if volume_info.get('imageLinks'):
+            image_link = volume_info.get('imageLinks')['thumbnail']
+
+        # display title, author, page count, publication date
+        book = {
+            "book_id": books_data[i]["id"],
+            "title": volume_info['title'],
+            "image": image_link,
+            "author": prettify_author,
+            "page_count": volume_info.get('pageCount'),
+            "publication_date": volume_info.get('publishedDate')
+        }
+        books.append(book)
+
+    return jsonify(books)
